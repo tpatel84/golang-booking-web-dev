@@ -3,8 +3,8 @@ package renders
 import (
 	"bytes"
 	"github.com/justinas/nosurf"
-	"github.com/tpatel84/golang-booking-web-dev/pkg/config"
-	"github.com/tpatel84/golang-booking-web-dev/pkg/models"
+	"github.com/tpatel84/golang-booking-web-dev/internal/config"
+	"github.com/tpatel84/golang-booking-web-dev/internal/models"
 	"html/template"
 	"log"
 	"net/http"

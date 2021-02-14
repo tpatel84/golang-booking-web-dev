@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/alexedwards/scs/v2"
-	"github.com/tpatel84/golang-booking-web-dev/pkg/config"
-	"github.com/tpatel84/golang-booking-web-dev/pkg/handlers"
-	"github.com/tpatel84/golang-booking-web-dev/pkg/renders"
+	"github.com/tpatel84/golang-booking-web-dev/internal/config"
+	"github.com/tpatel84/golang-booking-web-dev/internal/handlers"
+	"github.com/tpatel84/golang-booking-web-dev/internal/renders"
 	"log"
 	"net/http"
 	"time"

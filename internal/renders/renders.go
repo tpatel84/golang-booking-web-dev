@@ -2,6 +2,7 @@ package renders
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/tpatel84/golang-booking-web-dev/internal/config"
@@ -32,7 +33,7 @@ func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateDa
 }
 
 // RenderTemplate renders templates using html/template
-func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) error {
 	var tc map[string]*template.Template
 
 	if app.UseCache {
@@ -51,7 +52,8 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("Could not get template from template cache")
+		//log.Fatal("Can not get template from template cache")
+		return errors.New("Can't get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
@@ -62,6 +64,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 	_, err := buf.WriteTo(w)
 	if err != nil {
 		log.Println("Error writing template to browser", err)
+		return err
 	}
 
 	//parsedTpl, _ := template.ParseFiles("templates/" + tmpl)
@@ -70,6 +73,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 	//	log.Println("Error parsing template", err)
 	//	return
 	//}
+	return nil
 }
 
 func CreateTemplateCache() (map[string]*template.Template, error) {
@@ -94,7 +98,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			return myCache, err
 		}
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("#{pathToTemplate}/*.layout.tmpl"))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplate))
 			if err != nil {
 				return myCache, err
 			}

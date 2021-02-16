@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Println(fmt.Sprintf("Starting web application on port #{PORT}"))
+	log.Println(fmt.Sprintf("Starting web application on port %s", PORT))
 
 	//_ = http.ListenAndServe(PORT, nil)
 

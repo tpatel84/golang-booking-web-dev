@@ -31,6 +31,7 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
+// Home is the home page handler
 func (rp *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
 	rp.App.Session.Put(r.Context(), "remote_ip", remoteIP)
@@ -38,6 +39,7 @@ func (rp *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	renders.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
+// About is about page handler
 func (rp *Repository) About(w http.ResponseWriter, r *http.Request) {
 	stringMap := make(map[string]string)
 	stringMap["test"] = "Hello Again"
@@ -153,11 +155,18 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 // ReservationSummary provides the summary of guest reservation
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
-	// Retrieve guest reservation data from session
+	// Retrieve guest reservation data from session and type cast to models.Reservation
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
 		log.Println("Can't get item from session")
+		m.App.Session.Put(r.Context(), "error", "can't get reservation from session")
+		http.Redirect(w, r,"/", http.StatusTemporaryRedirect)
+		return
 	}
+
+	// Once reservation is complete, remove reservation from session
+	m.App.Session.Remove(r.Context(), "reservation")
+
 	data := make(map[string]interface{})
 	data["reservation"] = reservation
 

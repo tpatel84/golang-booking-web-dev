@@ -7,10 +7,10 @@ type TemplateData struct {
 	StringMap map[string]string
 	intMap    map[string]int
 	FloatMap  map[string]float32
-	Data      map[string]interface{} // string as key and any type as value (interface{}(empty interface) represents
-									 // any type)
+	// string as key and any type as value (interface{}(empty interface) represents any type)
+	Data      map[string]interface{}
 	CSRFToken string
-	FLash string
+	Flash string
 	Warning string
 	Error string
 	Form *forms.Form

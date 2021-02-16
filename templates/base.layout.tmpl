@@ -153,16 +153,17 @@
             })
         }
 
+
         {{with .Error}}
-        notify("{{.}}", "error")
+            notify("{{.}}", "error")
         {{end}}
 
         {{with .Flash}}
-        notify("{{.}}", "success")
+            notify("{{.}}", "success")
         {{end}}
 
         {{with .Warning}}
-        notify("{{.}}", "warning")
+            notify("{{.}}", "warning")
         {{end}}
     </script>
 

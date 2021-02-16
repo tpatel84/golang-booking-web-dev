@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/tpatel84/golang-booking-web-dev/internal/config"
 	"github.com/tpatel84/golang-booking-web-dev/internal/handlers"
@@ -19,6 +20,27 @@ var session *scs.SessionManager
 
 func main() {
 
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(fmt.Sprintf("Starting web application on port #{PORT}"))
+
+	//_ = http.ListenAndServe(PORT, nil)
+
+	srv := &http.Server{
+		Addr: PORT,
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal("Failed to start an application : ", err)
+	}
+}
+
+func run() error {
 	// Store data in session
 	gob.Register(models.Reservation{})
 
@@ -36,6 +58,7 @@ func main() {
 	tc, err := renders.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("Can't create a template cache")
+		return err
 	}
 	app.TemplateCache = tc
 
@@ -47,20 +70,5 @@ func main() {
 
 	renders.NewTemplates(&app)
 
-	//http.HandleFunc("/", handlers.Repo.Home)
-	//http.HandleFunc("/about", handlers.Repo.About)
-
-	log.Println("Starting web application on port", PORT)
-
-	//_ = http.ListenAndServe(PORT, nil)
-
-	srv := &http.Server{
-		Addr: PORT,
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal("Failed to start application", err)
-	}
+	return nil
 }

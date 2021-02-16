@@ -2,6 +2,7 @@ package renders
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/justinas/nosurf"
 	"github.com/tpatel84/golang-booking-web-dev/internal/config"
 	"github.com/tpatel84/golang-booking-web-dev/internal/models"
@@ -13,17 +14,24 @@ import (
 
 var functions = template.FuncMap{}
 var app *config.AppConfig
+var pathToTemplate = "./template"
 
 // NewTemplates sets the config for the template package
 func NewTemplates(a *config.AppConfig) {
 	app = a
 }
 
+// AddDefaultData add data for all templates
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	// Success message
+	td.Flash = app.Session.PopString(r.Context(), "flash")
+	td.Error = app.Session.PopString(r.Context(), "error")
+	td.Warning = app.Session.PopString(r.Context(), "warning")
 	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 
+// RenderTemplate renders templates using html/template
 func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 
@@ -67,7 +75,7 @@ func RenderTemplate(w http.ResponseWriter, r *http.Request, tmpl string, td *mod
 func CreateTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob("templates/*.page.tmpl")
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.tmpl", pathToTemplate))
 	if err != nil {
 		log.Println("Failed to find templates files")
 		return myCache, err
@@ -80,13 +88,13 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 			log.Println("Failed to create templates")
 			return myCache, err
 		}
-		matches, err := filepath.Glob("templates/*.layout.tmpl")
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.tmpl", pathToTemplate))
 		if err != nil {
 			log.Println("Failed to get matching templates")
 			return myCache, err
 		}
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob("templates/*.layout.tmpl")
+			ts, err = ts.ParseGlob(fmt.Sprintf("#{pathToTemplate}/*.layout.tmpl"))
 			if err != nil {
 				return myCache, err
 			}

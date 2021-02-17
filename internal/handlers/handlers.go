@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/tpatel84/golang-booking-web-dev/internal/config"
 	"github.com/tpatel84/golang-booking-web-dev/internal/forms"
+	"github.com/tpatel84/golang-booking-web-dev/internal/helpers"
 	"github.com/tpatel84/golang-booking-web-dev/internal/models"
 	"github.com/tpatel84/golang-booking-web-dev/internal/renders"
-	"log"
 	"net/http"
 )
 
@@ -32,24 +32,22 @@ func NewHandlers(r *Repository) {
 }
 
 // Home is the home page handler
-func (rp *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	remoteIP := r.RemoteAddr
-	rp.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+	//remoteIP := r.RemoteAddr
+	//rp.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
 	renders.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About is about page handler
-func (rp *Repository) About(w http.ResponseWriter, r *http.Request) {
-	stringMap := make(map[string]string)
-	stringMap["test"] = "Hello Again"
+func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
+	//stringMap := make(map[string]string)
+	//stringMap["test"] = "Hello Again"
+	//
+	//remoteIP := rp.App.Session.GetString(r.Context(), "remote_ip")
+	//stringMap["remote_ip"] = remoteIP
 
-	remoteIP := rp.App.Session.GetString(r.Context(), "remote_ip")
-	stringMap["remote_ip"] = remoteIP
-
-	renders.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{
-		StringMap: stringMap,
-	})
+	renders.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{})
 }
 
 // Generals renders the room page
@@ -89,7 +87,9 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 	out, err := json.MarshalIndent(resp, "", "     ")
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	//log.Println(string(out))
@@ -118,7 +118,8 @@ func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
+		//log.Println(err)
+		helpers.ServerError(w, err)
 		return
 	}
 
@@ -158,7 +159,8 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	// Retrieve guest reservation data from session and type cast to models.Reservation
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
-		log.Println("Can't get item from session")
+		//log.Println("Can't get item from session")
+		m.App.ErrorLog.Println("Can't get item from session")
 		m.App.Session.Put(r.Context(), "error", "can't get reservation from session")
 		http.Redirect(w, r,"/", http.StatusTemporaryRedirect)
 		return

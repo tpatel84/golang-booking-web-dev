@@ -6,10 +6,12 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/tpatel84/golang-booking-web-dev/internal/config"
 	"github.com/tpatel84/golang-booking-web-dev/internal/handlers"
+	"github.com/tpatel84/golang-booking-web-dev/internal/helpers"
 	"github.com/tpatel84/golang-booking-web-dev/internal/models"
 	"github.com/tpatel84/golang-booking-web-dev/internal/renders"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -17,6 +19,9 @@ const PORT = ":10000"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
+
 
 func main() {
 
@@ -47,6 +52,13 @@ func run() error {
 	// change this to true when in production
 	app.InProduction = false
 
+	//Setup an logger for application
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
@@ -69,6 +81,8 @@ func run() error {
 	handlers.NewHandlers(repo)
 
 	renders.NewTemplates(&app)
+
+	helpers.NewHelpers(&app)
 
 	return nil
 }

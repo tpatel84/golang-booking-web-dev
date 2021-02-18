@@ -6,6 +6,7 @@
 *.dylib
 *.idea
 .DS_Store
+database.yaml
 
 # Test binary, built with `go test -c`
 *.test
